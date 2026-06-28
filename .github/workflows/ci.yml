@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Restore the Vite Task cache from a previous run. Place this AFTER
+      # `pnpm install` because the cache lives inside node_modules.
+      - name: Restore Vite Task cache
+        id: vite-task-cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules/.vite/task-cache
+          key: vite-task-${{ runner.os }}-${{ github.sha }}
+          restore-keys: |
+            vite-task-${{ runner.os }}-
+
+      - name: Show actions/cache outcome
+        run: |
+          echo "exact cache-hit: ${{ steps.vite-task-cache.outputs.cache-hit }}"
+          echo "restored from key: ${{ steps.vite-task-cache.outputs.cache-matched-key }}"
+          echo '--- task-cache dir before tasks ---'
+          ls -R node_modules/.vite/task-cache 2>/dev/null || echo '(no task-cache restored)'
+
+      - name: vp run build
+        run: pnpm exec vp run build
+
+      - name: vp run greet
+        run: pnpm exec vp run greet
