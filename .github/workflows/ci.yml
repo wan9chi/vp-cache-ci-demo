@@ -13,16 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Installs Vite+, Node, the package manager, runs `vp install`, and
-      # (with cache: true) caches project DEPENDENCIES.
-      - uses: voidzero-dev/setup-vp@v1
+      - uses: pnpm/action-setup@v4
         with:
-          node-version: '22'
-          cache: true
+          version: 10
 
-      # Separately cache the Vite Task OUTPUT cache so task results are
-      # reused across runs. Placed after setup-vp because the cache lives
-      # inside node_modules (created by setup-vp's `vp install`).
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Restore the Vite Task cache from a previous run. Place this AFTER
+      # `pnpm install` because the cache lives inside node_modules.
       - name: Restore Vite Task cache
         id: vite-task-cache
         uses: actions/cache@v4
@@ -37,5 +41,5 @@ jobs:
           echo "exact cache-hit: ${{ steps.vite-task-cache.outputs.cache-hit }}"
           echo "restored from key: ${{ steps.vite-task-cache.outputs.cache-matched-key }}"
 
-      - run: vp run build
-      - run: vp run greet
+      - run: pnpm exec vp run build
+      - run: pnpm exec vp run greet
