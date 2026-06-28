@@ -1,0 +1,15 @@
+{
+  "name": "cache-exp",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "vite-plus": "https://pkg.pr.new/voidzero-dev/vite-plus@1973"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "11.9.0",
+      "onFail": "download"
+    }
+  }
+}
