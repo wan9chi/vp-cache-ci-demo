@@ -9,3 +9,5 @@ Actions runs with `actions/cache`.
 
 See `.github/workflows/ci.yml`. Uses a `pkg.pr.new` build of `vite-plus` (main)
 purely for experimentation.
+
+<!-- run 2: trivial change to a non-input file; tasks should still cache-hit -->
